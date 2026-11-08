@@ -319,3 +319,66 @@ footer{
   font-size:.85rem;
 }
 footer a{color:var(--gold);}
+
+/* ===== Bright theme (matches the Sunday Program pages) ===== */
+:root{
+  --purple:#4b1f5c;
+  --purple-dark:#3a1748;
+  --lavender:#f3eef8;
+  --lavender-2:#e9e1f2;
+  --line:#e3dcea;
+}
+body{background:linear-gradient(180deg,#ffffff 0%,var(--lavender) 100%);}
+a{color:var(--purple);}
+a:hover{color:var(--gold-dark);}
+
+.site-header{
+  background:#ffffff;
+  color:var(--purple);
+  border-bottom:1px solid var(--line);
+  box-shadow:0 2px 10px rgba(75,31,92,.06);
+}
+.brand-name{color:var(--purple);}
+.brand-tag{color:var(--gold-dark);}
+.pastor-line{color:#5b5f68;}
+.address-line{color:var(--gold-dark);}
+.site-nav a{background:var(--purple);color:#fff;}
+.site-nav a:hover{background:var(--purple-dark);color:#fff;}
+
+.hero{
+  background:linear-gradient(180deg,#ffffff 0%,var(--lavender-2) 100%);
+  color:var(--ink);
+}
+.hero h1{color:var(--purple);}
+.hero p{color:#5b5f68;}
+.hero-photo{box-shadow:0 8px 22px rgba(75,31,92,.18);}
+
+.panel{box-shadow:0 6px 22px rgba(75,31,92,.08);border:1px solid var(--line);}
+h2{color:var(--purple);}
+.announce-text,.welcome-msg,.announce-list li{background:var(--lavender);}
+.welcome-msg{border-left-color:var(--purple);}
+.announce-text h3,.announce-list li strong,.address-grid .lead strong{color:var(--purple);}
+.announce-block h3{color:var(--purple-dark);}
+
+table.times th{background:var(--purple);}
+table.times td{border-bottom-color:var(--line);}
+table.times tr:nth-child(even) td{background:var(--lavender);}
+
+.give-panel{
+  background:linear-gradient(160deg,#ffffff 0%,var(--lavender) 100%);
+  color:var(--ink);
+}
+.give-panel h2{color:var(--purple);}
+.verse{color:#4a4d55;}
+.verse cite{color:var(--gold-dark);}
+.give-card{background:#ffffff;border:1px solid var(--line);box-shadow:0 3px 12px rgba(75,31,92,.06);}
+.give-card h3{color:var(--purple);}
+.give-card p{color:#5b5f68;}
+.qr-img{box-shadow:0 3px 10px rgba(75,31,92,.15);}
+.give-btn{background:var(--purple);color:#fff;}
+.give-btn:hover{background:var(--purple-dark);color:#fff;}
+.program-btn{background:var(--gold);color:var(--purple-dark);}
+.program-btn:hover{background:#e0bd45;color:var(--purple-dark);}
+
+footer{background:#ffffff;color:#5b5f68;border-top:1px solid var(--line);}
+footer a{color:var(--purple);}
