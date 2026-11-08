@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Church Calendar | Living Word Fellowship</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  main.cal{max-width:1100px;margin:0 auto;padding:24px 20px 50px;}
+  .cal section{margin-bottom:34px;}
+  .cal h2{font-size:1.45rem;}
+  .color-key{display:flex;flex-wrap:wrap;gap:12px 22px;font-family:Arial,Helvetica,sans-serif;font-size:.95rem;}
+  .key-item{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:6px 14px;}
+  .swatch{width:16px;height:16px;border-radius:50%;display:inline-block;}
+  .swatch.church,.dept-church .dept-badge{background:var(--purple);}
+  .swatch.youth,.dept-youth .dept-badge{background:#2f8f6b;}
+  .swatch.district,.dept-district .dept-badge{background:#C9A227;}
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;align-items:start;}
+  .card{background:#fff;border:1px solid var(--line);border-top:4px solid var(--purple);border-radius:12px;padding:18px 18px 16px;box-shadow:0 4px 14px rgba(75,31,92,.07);}
+  .card h3{margin:0 0 4px;color:var(--purple);font-size:1.08rem;}
+  .card p{margin:0;font-family:Arial,Helvetica,sans-serif;color:#4a4d55;font-size:.93rem;}
+  .login-details{margin-top:12px;background:var(--lavender);border-left:3px solid var(--gold);border-radius:6px;padding:10px 12px;}
+  .login-details p{font-size:.86rem;margin:2px 0;word-break:break-word;}
+  .login-title{font-weight:700;color:var(--purple) !important;}
+  .month-card{border-top-color:var(--gold);}
+  .month-card h3{font-size:1.15rem;margin-bottom:10px;}
+  .dept-block{margin-top:10px;}
+  .dept-badge{display:inline-block;color:#fff;font-family:Arial,Helvetica,sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 10px;border-radius:12px;}
+  .dept-district .dept-badge{color:var(--purple-dark);}
+  .dept-block ul{margin:8px 0 0;padding:0;list-style:none;font-family:Arial,Helvetica,sans-serif;font-size:.9rem;}
+  .dept-block li{padding:6px 0;border-bottom:1px dashed var(--line);color:var(--ink);}
+  .dept-block li:last-child{border-bottom:0;}
+  .tag{display:block;font-weight:700;color:var(--purple);font-size:.84rem;}
+  .month-card:not(:has(.dept-block))::after{content:"No special events yet";display:block;font-family:Arial,Helvetica,sans-serif;font-size:.85rem;color:#8a8d95;font-style:italic;}
+  .contact-line{font-family:Arial,Helvetica,sans-serif;font-size:.9rem;color:#5b5f68;margin-top:10px;}
+  .bottom-nav{text-align:center;margin-top:10px;}
+  .bottom-nav .give-btn{margin:6px;}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <span class="brand-name">Living Word Fellowship</span>
+  <span class="brand-tag">Church of God in Christ &middot; Memphis, TN</span>
+  <nav class="site-nav">
+    <a href="index.html">&larr; Home</a>
+    <a href="https://lwfsundayprogram.netlify.app/">This Sunday's Program</a>
+  </nav>
+</header>
+
+<div class="hero" style="padding:40px 24px 44px;">
+  <h1>Living Word Fellowship Calendar</h1>
+  <p>August 2026 &ndash; July 2027 &middot; LWF Church, Youth Department &amp; D.D. Chandler District</p>
+  <div class="contact-line">
+    4405 Stage Rd, Memphis, TN 38128 &nbsp;|&nbsp; (901) 380-0400 &nbsp;|&nbsp;
+    <a href="https://www.facebook.com/livingwordfellowshipcogic" target="_blank" rel="noopener">Facebook</a>
+  </div>
+</div>
+
+<main class="cal">
+
+  <section>
+    <h2>Color Key</h2>
+    <div class="color-key">
+      <span class="key-item"><span class="swatch church"></span>LWF Church</span>
+      <span class="key-item"><span class="swatch youth"></span>Youth Department</span>
+      <span class="key-item"><span class="swatch district"></span>D.D. Chandler District</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Recurring LWF Church Events</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Sunday Morning Prayer</h3>
+        <p>Every Sunday, 8:30 AM</p>
+      </div>
+      <div class="card">
+        <h3>Sunday School</h3>
+        <p>Every Sunday, 9:00 AM</p>
+      </div>
+      <div class="card">
+        <h3>Sunday Service</h3>
+        <p>Every Sunday, 10:30 AM</p>
+      </div>
+      <div class="card">
+        <h3>Online Bible Study</h3>
+        <p>Every Thursday, 7:00 PM</p>
+        <div class="login-details">
+          <p class="login-title">Online Zoom and Facebook Bible Study</p>
+          <p>Day and Time: Thursday, 7:00 PM</p>
+          <p>Facebook Link: <a href="https://www.facebook.com/livingwordfellowshipcogic/" target="_blank" rel="noopener">facebook.com/livingwordfellowshipcogic</a></p>
+          <p>Zoom Link: <a href="https://us02web.zoom.us/j/6726605351" target="_blank" rel="noopener">us02web.zoom.us/j/6726605351</a></p>
+          <p>Meeting ID: 672 660 5351</p>
+          <p>Passcode: 4405</p>
+          <p>Tap to Connect by Phone: <a href="tel:+13052241968,,6726605351">+1 305-224-1968</a></p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Saturday Morning Prayer</h3>
+        <p>Every Saturday, 9:00 AM</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Recurring Youth Meetings</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Online Youth Meeting</h3>
+        <p>Every Tuesday, 7:30&ndash;8:30 PM (August&ndash;May)</p>
+        <div class="login-details">
+          <p class="login-title">Online Zoom Youth Meeting Login Information</p>
+          <p>Day and Time: Tuesday, 7:30 PM</p>
+          <p>Zoom Link: <a href="https://us02web.zoom.us/j/6726605351" target="_blank" rel="noopener">us02web.zoom.us/j/6726605351</a></p>
+          <p>Meeting ID: 672 660 5351</p>
+          <p>Passcode: 4405</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Bible Study &amp; STEM Meeting</h3>
+        <p>Every Tuesday, 8:30 AM&ndash;5:30 PM (June&ndash;July)</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Month by Month</h2>
+    <div class="card-grid" id="calendar-grid">
+
+      <div class="card month-card">
+        <h3>August 2026</h3>
+        <div class="dept-block dept-youth">
+          <span class="dept-badge">Youth</span>
+          <ul>
+            <li><span class="tag">Aug 2 &amp; 9 (Sun):</span>Prayer for School Year and School Supplies Distribution</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card month-card">
+        <h3>September 2026</h3>
+      </div>
+
+      <div class="card month-card">
+        <h3>October 2026</h3>
+        <div class="dept-block dept-youth">
+          <span class="dept-badge">Youth</span>
+          <ul>
+            <li><span class="tag">Oct 25 (Sun):</span>Trunk or Treat</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card month-card">
+        <h3>November 2026</h3>
+        <div class="dept-block dept-church">
+          <span class="dept-badge">LWF Church</span>
+          <ul>
+            <li><span class="tag">Nov 26 (Thu):</span>Thanksgiving Service (4th Thursday)</li>
+          </ul>
+        </div>
+        <div class="dept-block dept-youth">
+          <span class="dept-badge">Youth</span>
+          <ul>
+            <li><span class="tag">Nov 14 (Sat):</span>Christmas Play Rehearsal, 12&ndash;1 PM</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card month-card">
+        <h3>December 2026</h3>
+        <div class="dept-block dept-church">
+          <span class="dept-badge">LWF Church</span>
+          <ul>
+            <li><span class="tag">Dec 24 (Thu):</span>Christmas Program</li>
+          </ul>
+        </div>
+        <div class="dept-block dept-youth">
+          <span class="dept-badge">Youth</span>
+          <ul>
+            <li><span class="tag">Dec 5 &amp; 12 (Sat):</span>Christmas Play Rehearsal, 12&ndash;1 PM</li>
+            <li><span class="tag">Dec 24 (Thu):</span>Youth Christmas Program</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card month-card">
+        <h3>January 2027</h3>
+        <div class="dept-block dept-church">
+          <span class="dept-badge">LWF Church</span>
+          <ul>
+            <li><span class="tag">Jan 22&ndash;23 (Fri&ndash;Sat):</span>Annual Shut-In</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card month-card">
+        <h3>February 2027</h3>
+        <div class="dept-block dept-church">
+          <span class="dept-badge">LWF Church</span>
+          <ul>
+            <li><span class="tag">All Month:</span>Black History Month</li>
+            <li><span class="tag">Feb 28 (Sun):</span>Country Feast</li>
+            <li><span class="tag">Feb 28 (Sun):</span>Black History Program and Country Dinner</li>
+          </ul>
+        </div>
+        <div class="dept-block dept-youth">
+          <span class="dept-badge">Youth</span>
+          <ul>
+            <li><span class="tag">Every Sun:</span>Black History Sunday Morning Review</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card month-card">
+        <h3>March 2027</h3>
+        <div class="dept-block dept-church">
+          <span class="dept-badge">LWF Church</span>
+          <ul>
+            <li><span class="tag">All Month:</span>Women's Month</li>
+            <li><span class="tag">Mar 25 (Thu):</span>Seven Last Sayings and Foot Washing Service</li>
+          </ul>
+        </div>
+        <div class="dept-block dept-youth">
+          <span class="dept-badge">Youth</span>
+          <ul>
+            <li><span class="tag">Every Sat before Easter:</span>Easter Program Rehearsal, 12:00 PM</li>
+            <li><span class="tag">Mar 16 (Tue):</span>District Youth Conference</li>
+            <li><span class="tag">Mar 28 (Sun):</span>Easter Program, 9:00 AM</li>
+          </ul>
+        </div>
+        <div class="dept-block dept-district">
+          <span class="dept-badge">D.D. Chandler District</span>
+          <ul>
+            <li><span class="tag">Mar 16&ndash;18 (Tue&ndash;Thu):</span>D.D. Chandler District Week</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card month-card">
+        <h3>April 2027</h3>
+        <div class="dept-block dept-church">
+          <span class="dept-badge">LWF Church</span>
+          <ul>
+            <li><span class="tag">Apr 21&ndash;23 (Wed&ndash;Fri):</span>Spring Revival</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card month-card">
+        <h3>May 2027</h3>
+        <div class="dept-block dept-church">
+          <span class="dept-badge">LWF Church</span>
+          <ul>
+            <li><span class="tag">May 30 (Sun):</span>Picnic on the Patio</li>
+          </ul>
+        </div>
+        <div class="dept-block dept-youth">
+          <span class="dept-badge">Youth</span>
+          <ul>
+            <li><span class="tag">May 16 (Sun):</span>End of School Recognition</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card month-card">
+        <h3>June 2027</h3>
+      </div>
+
+      <div class="card month-card">
+        <h3>July 2027</h3>
+      </div>
+
+    </div>
+  </section>
+
+  <p class="bottom-nav">
+    <a class="give-btn" href="index.html">&larr; Back to Home</a>
+    <a class="give-btn program-btn" href="https://lwfsundayprogram.netlify.app/">This Sunday's Program &rarr;</a>
+  </p>
+
+</main>
+
+<footer>
+  <div>Living Word Fellowship Church of God in Christ</div>
+  <div>4405 Stage Rd, Memphis, TN 38128 &nbsp;|&nbsp; (901) 380-0400</div>
+  <div><a href="https://www.facebook.com/livingwordfellowshipcogic" target="_blank" rel="noopener">facebook.com/livingwordfellowshipcogic</a></div>
+</footer>
+</body>
+</html>
