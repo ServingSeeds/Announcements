@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Edit Announcements | Living Word Fellowship</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  main.ed{max-width:1100px;margin:0 auto;padding:22px 16px 110px;}
+  .ed .panel{padding:22px;margin-bottom:22px;}
+  .ed h2{font-size:1.35rem;}
+  .ed label{display:block;font-family:Arial,Helvetica,sans-serif;font-size:.85rem;font-weight:700;color:#5b5f68;margin:0 0 6px;}
+  .ed input[type=text],.ed input[type=password],.ed textarea{width:100%;font-size:16px;font-family:Arial,Helvetica,sans-serif;padding:11px 12px;border:1px solid #cfc6da;border-radius:8px;background:#fff;color:var(--ink);}
+  .ed textarea{min-height:420px;line-height:1.5;resize:vertical;}
+  .ed input:focus,.ed textarea:focus{outline:2px solid #8a5fa0;border-color:transparent;}
+  .btn{font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;border-radius:8px;border:1px solid #cfc6da;background:#fff;color:var(--ink);padding:10px 14px;cursor:pointer;}
+  .btn:hover{background:#f3eef8;}
+  .btn.primary{background:var(--purple);border-color:var(--purple);color:#fff;}
+  .btn.primary:hover{background:var(--purple-dark);}
+  .btn.gold{background:#C9A227;border-color:#C9A227;color:#3a1748;}
+  .btn.danger{color:#a01919;}
+  .btn:disabled{opacity:.6;cursor:default;}
+  .tools{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+  .tools .btn{padding:8px 12px;font-size:14px;}
+  .two{display:grid;gap:18px;}
+  @media(min-width:900px){.two{grid-template-columns:1fr 1fr;align-items:start;}}
+  .preview{background:var(--lavender);border-left:4px solid var(--gold);border-radius:8px;padding:16px 18px;max-height:640px;overflow:auto;}
+  .preview h3{color:var(--purple);font-size:1.05rem;margin:14px 0 6px;}
+  .preview h3:first-child{margin-top:0;}
+  .preview p{margin:0 0 12px;}
+  .preview ul{margin:0 0 12px;padding-left:22px;}
+  .muted{font-family:Arial,Helvetica,sans-serif;color:#5b5f68;font-size:.85rem;}
+  .flyers{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin-top:10px;}
+  .flyer{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+  .flyer img{width:100%;height:220px;object-fit:contain;background:#f3eef8;}
+  .flyer .body{padding:10px;display:flex;flex-direction:column;gap:8px;}
+  .flyer .row{display:flex;gap:6px;}
+  .flyer .row .btn{flex:1;padding:8px 0;}
+  .ed .add-box{display:flex;font-size:1rem;font-weight:400;margin:0;gap:6px;}
+  .add-box{border:2px dashed #cfc6da;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:260px;text-align:center;padding:16px;cursor:pointer;background:#fbf9fd;}
+  .add-box:hover{background:#f3eef8;}
+  .add-box b{font-family:Arial,Helvetica,sans-serif;color:var(--purple);font-size:1.05rem;}
+  .savebar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);box-shadow:0 -4px 14px rgba(75,31,92,.08);padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:center;z-index:20;}
+  .savebar .btn{white-space:nowrap;text-decoration:none;}
+  .savebar .btn.primary{padding:14px 26px;font-size:17px;min-width:220px;}
+  .status{font-family:Arial,Helvetica,sans-serif;font-size:.95rem;min-height:1.3em;}
+  .status.ok{color:#1b6b34;} .status.err{color:#a01919;}
+  .gate{max-width:380px;margin:50px auto;text-align:center;}
+  .gate input{text-align:center;font-size:22px !important;letter-spacing:6px;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <span class="brand-name">Living Word Fellowship</span>
+  <span class="brand-tag">Update the Announcements</span>
+  <nav class="site-nav">
+    <a href="index.html">&larr; Home</a>
+    <a href="https://lwfsundayprogram.netlify.app/?page=edit">Edit Sunday Program</a>
+  </nav>
+</header>
+
+<main class="ed">
+
+  <!-- Unlock -->
+  <div id="gate" class="panel gate">
+    <h2>Edit Announcements</h2>
+    <p class="muted">Enter the edit code to continue.</p>
+    <form id="gateForm">
+      <input id="gateCode" type="password" inputmode="numeric" autocomplete="off" placeholder="Edit code">
+      <button class="btn primary" type="submit" style="width:100%;margin-top:12px;padding:14px">Unlock</button>
+    </form>
+    <div class="status" id="gateStatus" style="margin-top:10px"></div>
+  </div>
+
+  <div id="editor" class="hidden">
+
+    <!-- Weekly -->
+    <section class="panel" id="weekly">
+      <h2>Weekly Announcements</h2>
+      <p class="muted" style="margin-top:-6px">Type below and the preview updates as you go. Use the buttons to add a heading, a bullet, or bold words.</p>
+      <div class="two">
+        <div>
+          <div class="tools">
+            <button class="btn" type="button" data-ins="heading">Heading</button>
+            <button class="btn" type="button" data-ins="bullet">&bull; Bullet</button>
+            <button class="btn" type="button" data-ins="bold"><b>Bold</b></button>
+            <button class="btn" type="button" data-ins="blank">New paragraph</button>
+          </div>
+          <textarea id="weeklyText" spellcheck="true"></textarea>
+          <p class="muted">Tips: a line starting with <b>#&nbsp;</b> is a heading &middot; <b>-&nbsp;</b> is a bullet &middot; <b>**words**</b> are bold &middot; leave a blank line between sections.</p>
+        </div>
+        <div>
+          <label>Preview</label>
+          <div class="preview" id="weeklyPreview"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Digital -->
+    <section class="panel" id="flyers">
+      <h2>Digital Announcements (Flyers)</h2>
+      <p class="muted" style="margin-top:-6px">Add a flyer from your phone's photos or your computer. Type a short caption under each one. Use &uarr; &darr; to change the order and &#10005; to remove.</p>
+      <input id="fileInput" type="file" accept="image/*" multiple class="hidden">
+      <div class="flyers" id="flyerList"></div>
+    </section>
+
+  </div>
+</main>
+
+<div class="savebar hidden" id="savebar">
+  <button class="btn primary" id="saveBtn">Save &amp; publish</button>
+  <a class="btn" href="index.html" target="_blank" rel="noopener">View website</a>
+  <span class="status" id="status"></span>
+</div>
+
+<script src="announce-render.js"></script>
+<script>
+(function () {
+  var API = "/api/announce";
+  var code = "";
+  var state = { weekly: "", digital: [] };
+  var dirty = false;
+  var $ = function (id) { return document.getElementById(id); };
+
+  function post(body) {
+    return fetch(API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); }, function () { throw new Error("Could not reach the website. Check your internet connection."); })
+      .then(function (d) { if (!d.ok) throw new Error(d.error || "Something went wrong."); return d.result; });
+  }
+  function setStatus(msg, err) { var s = $("status"); s.className = "status " + (err ? "err" : "ok"); s.textContent = msg; }
+  function touch() { dirty = true; setStatus(""); }
+
+  /* ---------- Unlock ---------- */
+  try { code = sessionStorage.getItem("lwfAnnCode") || ""; } catch (e) {}
+  function unlock(c) {
+    return post({ action: "checkCode", code: c }).then(function (ok) {
+      if (!ok) throw new Error("That code is not correct.");
+      code = c; try { sessionStorage.setItem("lwfAnnCode", c); } catch (e) {}
+      $("gate").classList.add("hidden"); $("editor").classList.remove("hidden"); $("savebar").classList.remove("hidden");
+      return load();
+    });
+  }
+  $("gateForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var g = $("gateStatus"); g.className = "status"; g.textContent = "Checking…";
+    unlock($("gateCode").value).catch(function (err) { g.className = "status err"; g.textContent = err.message; $("gateCode").value = ""; $("gateCode").focus(); });
+  });
+  if (code) unlock(code).catch(function () { code = ""; });
+  else $("gateCode").focus();
+
+  /* ---------- Load ---------- */
+  function seedDigitalFromHome() {
+    return fetch("index.html?_=" + Date.now()).then(function (r) { return r.text(); }).then(function (html) {
+      var doc = new DOMParser().parseFromString(html, "text/html");
+      return Array.prototype.map.call(doc.querySelectorAll(".digital-announce-card"), function (f) {
+        var img = f.querySelector("img"), cap = f.querySelector("figcaption");
+        return { src: img ? img.getAttribute("src") : "", caption: cap ? cap.textContent.replace(/\s+/g, " ").trim() : "" };
+      }).filter(function (d) { return d.src; });
+    }).catch(function () { return []; });
+  }
+  function load() {
+    return fetch(API + "?api=get&_=" + Date.now()).then(function (r) { return r.json(); }).then(function (d) {
+      var res = (d && d.result) || {};
+      var w = res.weekly && typeof res.weekly.text === "string"
+        ? Promise.resolve(res.weekly.text)
+        : fetch("announcements.txt?_=" + Date.now()).then(function (r) { return r.ok ? r.text() : ""; }).catch(function () { return ""; });
+      var g = res.digital && res.digital.items ? Promise.resolve(res.digital.items) : seedDigitalFromHome();
+      return Promise.all([w, g]);
+    }).then(function (both) {
+      state.weekly = both[0]; state.digital = both[1];
+      $("weeklyText").value = state.weekly; renderPreview(); drawFlyers(); dirty = false;
+      if (location.hash === "#flyers") $("flyers").scrollIntoView();
+    });
+  }
+
+  /* ---------- Weekly ---------- */
+  function renderPreview() { $("weeklyPreview").innerHTML = LWFAnnounce.renderWeekly($("weeklyText").value) || '<p class="muted">Nothing typed yet.</p>'; }
+  $("weeklyText").addEventListener("input", function () { state.weekly = this.value; renderPreview(); touch(); });
+  document.querySelectorAll("[data-ins]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var ta = $("weeklyText"), s = ta.selectionStart, e = ta.selectionEnd, v = ta.value, sel = v.slice(s, e), ins, caret;
+      var lineStart = v.lastIndexOf("\n", s - 1) + 1, atLineStart = s === lineStart;
+      var k = b.getAttribute("data-ins");
+      if (k === "bold") { ins = "**" + (sel || "bold words") + "**"; caret = s + 2; }
+      else if (k === "heading") { ins = (atLineStart ? "" : "\n\n") + "# " + (sel || "New heading") + "\n"; caret = s + ins.length; }
+      else if (k === "bullet") { ins = (atLineStart ? "" : "\n") + "- " + (sel || ""); caret = s + ins.length; }
+      else { ins = "\n\n"; caret = s + 2; }
+      ta.value = v.slice(0, s) + ins + v.slice(e);
+      ta.focus();
+      if (k === "bold") { ta.selectionStart = s + 2; ta.selectionEnd = s + ins.length - 2; }
+      else { ta.selectionStart = ta.selectionEnd = caret; }
+      state.weekly = ta.value; renderPreview(); touch();
+    });
+  });
+
+  /* ---------- Flyers ---------- */
+  function drawFlyers() {
+    var box = $("flyerList");
+    box.innerHTML = state.digital.map(function (d, i) {
+      return '<div class="flyer"><img src="' + LWFAnnounce.escapeHtml(d.src) + '" alt="">' +
+        '<div class="body"><input type="text" data-cap="' + i + '" placeholder="Caption (optional)" value="' + LWFAnnounce.escapeHtml(d.caption || "") + '">' +
+        '<div class="row"><button class="btn" data-mv="up" data-i="' + i + '" title="Move up">&uarr;</button><button class="btn" data-mv="down" data-i="' + i + '" title="Move down">&darr;</button><button class="btn danger" data-mv="del" data-i="' + i + '" title="Remove">&#10005;</button></div></div></div>';
+    }).join("") + '<label class="add-box" for="fileInput"><b>+ Add flyer</b><span class="muted">Choose a picture from your phone or computer</span></label>';
+    box.querySelectorAll("[data-cap]").forEach(function (inp) {
+      inp.addEventListener("input", function () { state.digital[+inp.getAttribute("data-cap")].caption = inp.value; touch(); });
+    });
+    box.querySelectorAll("[data-mv]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var i = +b.getAttribute("data-i"), L = state.digital, m = b.getAttribute("data-mv");
+        if (m === "up" && i > 0) L.splice(i - 1, 0, L.splice(i, 1)[0]);
+        if (m === "down" && i < L.length - 1) L.splice(i + 1, 0, L.splice(i, 1)[0]);
+        if (m === "del") L.splice(i, 1);
+        drawFlyers(); touch();
+      });
+    });
+  }
+  // Shrink big phone photos before uploading (max 1600px wide)
+  function shrink(file) {
+    return new Promise(function (resolve, reject) {
+      var r = new FileReader();
+      r.onerror = function () { reject(new Error("Could not read that picture.")); };
+      r.onload = function () {
+        var img = new Image();
+        img.onerror = function () { reject(new Error("That file is not a picture this browser can open.")); };
+        img.onload = function () {
+          var max = 1600, w = img.naturalWidth, h = img.naturalHeight;
+          if (w > max) { h = Math.round(h * max / w); w = max; }
+          var c = document.createElement("canvas"); c.width = w; c.height = h;
+          var ctx = c.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, w, h); ctx.drawImage(img, 0, 0, w, h);
+          resolve(c.toDataURL("image/jpeg", 0.85));
+        };
+        img.src = r.result;
+      };
+      r.readAsDataURL(file);
+    });
+  }
+  $("fileInput").addEventListener("change", function () {
+    var files = Array.prototype.slice.call(this.files || []); this.value = "";
+    if (!files.length) return;
+    setStatus("Uploading " + files.length + " picture" + (files.length > 1 ? "s" : "") + "…");
+    files.reduce(function (p, f) {
+      return p.then(function () { return shrink(f); }).then(function (dataUrl) {
+        return post({ action: "uploadImage", code: code, dataUrl: dataUrl });
+      }).then(function (res) {
+        state.digital.push({ src: res.src, caption: f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ") });
+        drawFlyers(); touch();
+      });
+    }, Promise.resolve()).then(function () {
+      setStatus("Picture added. Type a caption, then tap Save & publish.");
+    }).catch(function (e) { setStatus(e.message, true); });
+  });
+
+  /* ---------- Save ---------- */
+  $("saveBtn").addEventListener("click", function () {
+    var b = this; b.disabled = true; b.textContent = "Saving…";
+    post({ action: "save", code: code, weekly: $("weeklyText").value, digital: state.digital })
+      .then(function () { dirty = false; setStatus("Saved! The website is updated."); })
+      .catch(function (e) { setStatus(e.message, true); })
+      .then(function () { b.disabled = false; b.innerHTML = "Save &amp; publish"; });
+  });
+  window.addEventListener("beforeunload", function (e) { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+})();
+</script>
+</body>
+</html>

@@ -34,6 +34,10 @@
     text-align: center;
     color: #333;
   }
+  .announce-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px;}
+  .announce-head h2{margin-bottom:12px;}
+  .edit-pill{display:inline-block;font-family:Arial,Helvetica,sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;background:#C9A227;color:#3a1748;padding:8px 14px;border-radius:20px;}
+  .edit-pill:hover{background:#e0bd45;color:#3a1748;}
 </style>
 </head>
 <body>
@@ -58,12 +62,12 @@
 <main>
 
   <section class="panel announce-panel">
-    <h2>Weekly Announcements</h2>
+    <div class="announce-head"><h2>Weekly Announcements</h2><a class="edit-pill" href="announcements-edit.html">&#9998; Edit Announcements</a></div>
     <div id="announcements-content" class="lead announce-text">Loading this week's announcements&hellip;</div>
   </section>
 
   <section class="panel digital-announce-panel">
-    <h2>Digital Announcements</h2>
+    <div class="announce-head"><h2>Digital Announcements</h2><a class="edit-pill" href="announcements-edit.html#flyers">&#9998; Edit Flyers</a></div>
     <p class="lead" style="text-align:center;">Flyers and graphics for upcoming events at Living Word Fellowship.</p>
     <div class="digital-announce-grid">
          <figure class="digital-announce-card">
@@ -164,73 +168,34 @@
 </footer>
 
 
+<script src="announce-render.js"></script>
 <script>
   (function () {
-    var url = "https://raw.githubusercontent.com/lwf1cogic-lab/Announcements/main/announcements.txt?_=" + Date.now();
     var el = document.getElementById("announcements-content");
-
-    function escapeHtml(str) {
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    var grid = document.querySelector(".digital-announce-grid");
+    function showWeekly(text) {
+      el.innerHTML = String(text || "").trim().length
+        ? LWFAnnounce.renderWeekly(text)
+        : "<p>No announcements posted this week.</p>";
     }
-
-    // Very small formatter: "# " = heading, "- "/"* " = bullet list item,
-    // **text** = bold, blank line = paragraph break, everything else = plain text.
-    function renderAnnouncements(raw) {
-      var lines = raw.replace(/\r\n/g, "\n").split("\n");
-      var html = "";
-      var para = [];
-      var list = [];
-
-      function inline(s) {
-        return escapeHtml(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-      }
-      function flushPara() {
-        if (para.length) {
-          html += "<p>" + para.map(inline).join("<br>") + "</p>";
-          para = [];
-        }
-      }
-      function flushList() {
-        if (list.length) {
-          html += "<ul>" + list.map(function (i) { return "<li>" + inline(i) + "</li>"; }).join("") + "</ul>";
-          list = [];
-        }
-      }
-
-      lines.forEach(function (line) {
-        var trimmed = line.trim();
-        if (trimmed === "") {
-          flushPara();
-          flushList();
-        } else if (trimmed.indexOf("# ") === 0) {
-          flushPara();
-          flushList();
-          html += "<h3>" + inline(trimmed.slice(2)) + "</h3>";
-        } else if (trimmed.indexOf("- ") === 0 || trimmed.indexOf("* ") === 0) {
-          flushPara();
-          list.push(trimmed.slice(2));
-        } else {
-          flushList();
-          para.push(trimmed);
-        }
-      });
-      flushPara();
-      flushList();
-      return html;
-    }
-
-    fetch(url)
-      .then(function (r) {
+    function fromFile() {
+      return fetch("announcements.txt?_=" + Date.now()).then(function (r) {
         if (!r.ok) { throw new Error("not found"); }
         return r.text();
-      })
-      .then(function (text) {
-        el.innerHTML = text.trim().length
-          ? renderAnnouncements(text)
-          : "<p>No announcements posted this week.</p>";
+      });
+    }
+    fetch("/api/announce?api=get&_=" + Date.now())
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var res = (d && d.ok && d.result) || {};
+        if (res.digital && res.digital.items && grid) grid.innerHTML = LWFAnnounce.renderDigital(res.digital.items) || '<p class="lead" style="text-align:center">No flyers posted right now.</p>';
+        if (res.weekly && typeof res.weekly.text === "string") return showWeekly(res.weekly.text);
+        return fromFile().then(showWeekly);
       })
       .catch(function () {
-        el.innerHTML = "<p>Announcements are temporarily unavailable. Please check back soon.</p>";
+        fromFile().then(showWeekly).catch(function () {
+          el.innerHTML = "<p>Announcements are temporarily unavailable. Please check back soon.</p>";
+        });
       });
   })();
 </script>
