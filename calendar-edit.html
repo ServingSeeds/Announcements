@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Edit Calendar | Living Word Fellowship</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="editor.css">
+<style>
+  .items{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));}
+  .item{background:#fff;border:1px solid var(--line);border-top:4px solid var(--purple);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;}
+  .item textarea{min-height:110px;font-size:15px;}
+  .item .row,.mhead .row{display:flex;gap:6px;}
+  .item .row .btn{flex:1;padding:8px 0;}
+  .months{display:grid;gap:16px;}
+  .month{background:#fff;border:1px solid var(--line);border-top:4px solid var(--gold);border-radius:12px;padding:12px;}
+  .mhead{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+  .mhead input{font-weight:700;color:var(--purple);font-family:Georgia,serif !important;font-size:18px !important;}
+  .mhead .btn{padding:9px 12px;}
+  .ev{display:grid;grid-template-columns:150px 170px 1fr auto;gap:6px;align-items:center;padding:8px 0;border-top:1px dashed var(--line);}
+  .ev select{font-size:15px;padding:10px 8px;border:1px solid #cfc6da;border-radius:8px;background:#fff;}
+  .ev select.church{border-left:6px solid var(--purple);} .ev select.youth{border-left:6px solid #2f8f6b;} .ev select.district{border-left:6px solid #C9A227;}
+  .ev .btn{padding:9px 12px;}
+  @media (max-width:700px){
+    .ev select,.ev input{min-width:0;width:100%;}
+    .ev{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;grid-template-areas:"dept date date" "text text del";}
+    .ev select{grid-area:dept;} .ev input[data-ef=date]{grid-area:date;} .ev input.etext{grid-area:text;} .ev .btn{grid-area:del;}
+  }
+  .addrow{margin-top:8px;}
+  .empty-note{font-family:Arial,Helvetica,sans-serif;font-size:.88rem;color:#8a8d95;font-style:italic;padding:4px 0;}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <span class="brand-name">Living Word Fellowship</span>
+  <span class="brand-tag">Update the Church Calendar</span>
+  <nav class="site-nav">
+    <a href="index.html">&larr; Home</a>
+    <a href="calendar.html">View Calendar</a>
+  </nav>
+</header>
+
+<main class="ed">
+
+  <div id="gate" class="panel gate">
+    <h2>Edit Calendar</h2>
+    <p class="muted">Enter the edit code to continue.</p>
+    <form id="gateForm">
+      <input id="gateCode" type="password" inputmode="numeric" autocomplete="off" placeholder="Edit code">
+      <button class="btn primary" type="submit" style="width:100%;margin-top:12px;padding:14px">Unlock</button>
+    </form>
+    <div class="status" id="gateStatus" style="margin-top:10px"></div>
+  </div>
+
+  <div id="editor" class="hidden">
+
+    <section class="panel">
+      <h2>Calendar Title Line</h2>
+      <label for="sub">Shown under "Living Word Fellowship Calendar"</label>
+      <input type="text" id="sub">
+    </section>
+
+    <section class="panel">
+      <h2>Recurring LWF Church Events</h2>
+      <p class="muted" style="margin-top:-6px">Weekly events. In <b>Details</b>, put each item on its own line &mdash; the first line shows in bold. Web addresses and phone numbers become tappable links.</p>
+      <div class="items" id="recurring"></div>
+      <button class="btn addrow" data-add="recurring">+ Add church event</button>
+    </section>
+
+    <section class="panel">
+      <h2>Recurring Youth Meetings</h2>
+      <div class="items" id="youth"></div>
+      <button class="btn addrow" data-add="youth">+ Add youth meeting</button>
+    </section>
+
+    <section class="panel">
+      <h2>Month by Month</h2>
+      <p class="muted" style="margin-top:-6px">For each event pick who it's for (LWF Church, Youth, or District), type the date, then what it is. Example date: <b>Dec 24 (Thu)</b>.</p>
+      <div class="months" id="months"></div>
+      <button class="btn addrow gold" id="addMonth">+ Add next month</button>
+    </section>
+
+  </div>
+</main>
+
+<div class="savebar hidden" id="savebar">
+  <button class="btn primary" id="saveBtn">Save &amp; publish</button>
+  <a class="btn" href="calendar.html" target="_blank" rel="noopener">View calendar</a>
+  <span class="status" id="status"></span>
+</div>
+
+<script src="calendar.js"></script>
+<script>
+(function () {
+  var API = "/api/announce";
+  var code = "", cal = null, dirty = false;
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = LWFCal.esc;
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  function post(body) {
+    return fetch(API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); }, function () { throw new Error("Could not reach the website. Check your internet connection."); })
+      .then(function (d) { if (!d.ok) throw new Error(d.error || "Something went wrong."); return d.result; });
+  }
+  function setStatus(m, err) { var s = $("status"); s.className = "status " + (err ? "err" : "ok"); s.textContent = m; }
+  function touch() { dirty = true; setStatus(""); }
+
+  /* ---------- Unlock ---------- */
+  try { code = sessionStorage.getItem("lwfAnnCode") || ""; } catch (e) {}
+  function unlock(c) {
+    return post({ action: "checkCode", code: c }).then(function (ok) {
+      if (!ok) throw new Error("That code is not correct.");
+      code = c; try { sessionStorage.setItem("lwfAnnCode", c); } catch (e) {}
+      $("gate").classList.add("hidden"); $("editor").classList.remove("hidden"); $("savebar").classList.remove("hidden");
+      return load();
+    });
+  }
+  $("gateForm").addEventListener("submit", function (e) {
+    e.preventDefault(); var g = $("gateStatus"); g.className = "status"; g.textContent = "Checking…";
+    unlock($("gateCode").value).catch(function (err) { g.className = "status err"; g.textContent = err.message; $("gateCode").value = ""; $("gateCode").focus(); });
+  });
+  if (code) unlock(code).catch(function () { code = ""; }); else $("gateCode").focus();
+
+  /* ---------- Load ---------- */
+  function load() {
+    return fetch(API + "?api=getCalendar&_=" + Date.now()).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.ok && d.result) return d.result;
+      return fetch("calendar.html?_=" + Date.now()).then(function (r) { return r.text(); }).then(function (html) {
+        return LWFCal.parse(new DOMParser().parseFromString(html, "text/html"));
+      });
+    }).then(function (c) {
+      cal = c; cal.recurring = cal.recurring || []; cal.youth = cal.youth || []; cal.months = cal.months || [];
+      $("sub").value = cal.subtitle || ""; drawAll(); dirty = false;
+    });
+  }
+  $("sub").addEventListener("input", function () { cal.subtitle = this.value; touch(); });
+
+  /* ---------- Recurring cards ---------- */
+  function drawCards(key) {
+    var box = $(key), L = cal[key];
+    box.innerHTML = L.map(function (c, i) {
+      return '<div class="item"><input type="text" data-f="title" data-i="' + i + '" placeholder="Event name" value="' + esc(c.title) + '">' +
+        '<input type="text" data-f="when" data-i="' + i + '" placeholder="When (e.g. Every Sunday, 9:00 AM)" value="' + esc(c.when) + '">' +
+        '<textarea data-f="details" data-i="' + i + '" placeholder="Details (optional) — one item per line">' + esc(c.details) + '</textarea>' +
+        '<div class="row"><button class="btn" data-mv="up" data-i="' + i + '">&uarr;</button><button class="btn" data-mv="down" data-i="' + i + '">&darr;</button><button class="btn danger" data-mv="del" data-i="' + i + '">&#10005; Remove</button></div></div>';
+    }).join("") || '<p class="empty-note">None yet.</p>';
+    box.querySelectorAll("[data-f]").forEach(function (el) {
+      el.addEventListener("input", function () { L[+el.getAttribute("data-i")][el.getAttribute("data-f")] = el.value; touch(); });
+    });
+    box.querySelectorAll("[data-mv]").forEach(function (b) {
+      b.addEventListener("click", function () { move(L, +b.getAttribute("data-i"), b.getAttribute("data-mv"), "this event"); drawCards(key); });
+    });
+  }
+  function move(L, i, m, what) {
+    if (m === "up" && i > 0) L.splice(i - 1, 0, L.splice(i, 1)[0]);
+    if (m === "down" && i < L.length - 1) L.splice(i + 1, 0, L.splice(i, 1)[0]);
+    if (m === "del") L.splice(i, 1);
+    touch();
+  }
+  document.querySelectorAll("[data-add]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var k = b.getAttribute("data-add"); cal[k].push({ title: "", when: "", details: "" }); drawCards(k); touch();
+      var ins = $(k).querySelectorAll('[data-f="title"]'); ins[ins.length - 1].focus();
+    });
+  });
+
+  /* ---------- Months ---------- */
+  function drawMonths() {
+    var box = $("months");
+    box.innerHTML = cal.months.map(function (m, mi) {
+      var evs = (m.events || []).map(function (e, ei) {
+        var d = e.dept || "church";
+        return '<div class="ev"><select class="' + d + '" data-m="' + mi + '" data-e="' + ei + '" data-ef="dept">' +
+          Object.keys(LWFCal.DEPTS).map(function (k) { return '<option value="' + k + '"' + (k === d ? " selected" : "") + ">" + LWFCal.DEPTS[k] + "</option>"; }).join("") + "</select>" +
+          '<input type="text" data-m="' + mi + '" data-e="' + ei + '" data-ef="date" placeholder="Date" value="' + esc(e.date) + '">' +
+          '<input type="text" class="etext" data-m="' + mi + '" data-e="' + ei + '" data-ef="text" placeholder="What is happening" value="' + esc(e.text) + '">' +
+          '<button class="btn danger" data-delev="' + mi + ',' + ei + '" title="Remove event">&#10005;</button></div>';
+      }).join("");
+      return '<div class="month"><div class="mhead"><input type="text" data-mname="' + mi + '" value="' + esc(m.name) + '">' +
+        '<button class="btn" data-mm="up" data-i="' + mi + '" title="Move up">&uarr;</button><button class="btn" data-mm="down" data-i="' + mi + '" title="Move down">&darr;</button><button class="btn danger" data-mm="del" data-i="' + mi + '" title="Remove month">&#10005;</button></div>' +
+        (evs || '<p class="empty-note">No special events yet.</p>') +
+        '<button class="btn addrow" data-addev="' + mi + '">+ Add event</button></div>';
+    }).join("");
+    box.querySelectorAll("[data-mname]").forEach(function (el) { el.addEventListener("input", function () { cal.months[+el.getAttribute("data-mname")].name = el.value; touch(); }); });
+    box.querySelectorAll("[data-ef]").forEach(function (el) {
+      var h = function () {
+        var e = cal.months[+el.getAttribute("data-m")].events[+el.getAttribute("data-e")]; e[el.getAttribute("data-ef")] = el.value;
+        if (el.tagName === "SELECT") el.className = el.value; touch();
+      };
+      el.addEventListener("input", h); el.addEventListener("change", h);
+    });
+    box.querySelectorAll("[data-delev]").forEach(function (b) {
+      b.addEventListener("click", function () { var p = b.getAttribute("data-delev").split(","); cal.months[+p[0]].events.splice(+p[1], 1); drawMonths(); touch(); });
+    });
+    box.querySelectorAll("[data-addev]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var mi = +b.getAttribute("data-addev"); (cal.months[mi].events = cal.months[mi].events || []).push({ dept: "church", date: "", text: "" });
+        drawMonths(); touch();
+        var rows = $("months").children[mi].querySelectorAll('[data-ef="date"]'); rows[rows.length - 1].focus();
+      });
+    });
+    box.querySelectorAll("[data-mm]").forEach(function (b) {
+      b.addEventListener("click", function () { move(cal.months, +b.getAttribute("data-i"), b.getAttribute("data-mm"), "this month"); drawMonths(); });
+    });
+  }
+  $("addMonth").addEventListener("click", function () {
+    var last = cal.months[cal.months.length - 1], name = "";
+    var m = last && /^(\w+)\s+(\d{4})$/.exec(last.name || "");
+    if (m && MONTHS.indexOf(m[1]) >= 0) { var i = MONTHS.indexOf(m[1]) + 1, y = +m[2]; if (i === 12) { i = 0; y++; } name = MONTHS[i] + " " + y; }
+    cal.months.push({ name: name || "New Month", events: [] }); drawMonths(); touch();
+    $("months").lastElementChild.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  function drawAll() { drawCards("recurring"); drawCards("youth"); drawMonths(); }
+
+  /* ---------- Save ---------- */
+  $("saveBtn").addEventListener("click", function () {
+    var b = this; b.disabled = true; b.textContent = "Saving…";
+    var clean = JSON.parse(JSON.stringify(cal));
+    ["recurring", "youth"].forEach(function (k) { clean[k] = clean[k].filter(function (c) { return (c.title || "").trim() || (c.when || "").trim(); }); });
+    clean.months.forEach(function (m) { m.events = (m.events || []).filter(function (e) { return (e.text || "").trim() || (e.date || "").trim(); }); });
+    post({ action: "saveCalendar", code: code, calendar: clean })
+      .then(function () { dirty = false; setStatus("Saved! The calendar is updated."); })
+      .catch(function (e) { setStatus(e.message, true); })
+      .then(function () { b.disabled = false; b.innerHTML = "Save &amp; publish"; });
+  });
+  window.addEventListener("beforeunload", function (e) { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+})();
+</script>
+</body>
+</html>

@@ -45,12 +45,13 @@
   <nav class="site-nav">
     <a href="index.html">&larr; Home</a>
     <a href="https://lwfsundayprogram.netlify.app/">This Sunday's Program</a>
+    <a href="calendar-edit.html" style="background:#C9A227;color:#3a1748">&#9998; Edit Calendar</a>
   </nav>
 </header>
 
 <div class="hero" style="padding:40px 24px 44px;">
   <h1>Living Word Fellowship Calendar</h1>
-  <p>August 2026 &ndash; July 2027 &middot; LWF Church, Youth Department &amp; D.D. Chandler District</p>
+  <p id="cal-sub">August 2026 &ndash; July 2027 &middot; LWF Church, Youth Department &amp; D.D. Chandler District</p>
   <div class="contact-line">
     4405 Stage Rd, Memphis, TN 38128 &nbsp;|&nbsp; (901) 380-0400 &nbsp;|&nbsp;
     <a href="https://www.facebook.com/livingwordfellowshipcogic" target="_blank" rel="noopener">Facebook</a>
@@ -68,6 +69,7 @@
     </div>
   </section>
 
+  <div id="cal-root">
   <section>
     <h2>Recurring LWF Church Events</h2>
     <div class="card-grid">
@@ -275,9 +277,12 @@
     </div>
   </section>
 
+  </div>
+
   <p class="bottom-nav">
     <a class="give-btn" href="index.html">&larr; Back to Home</a>
     <a class="give-btn program-btn" href="https://lwfsundayprogram.netlify.app/">This Sunday's Program &rarr;</a>
+    <a class="give-btn program-btn" href="calendar-edit.html">&#9998; Edit Calendar</a>
   </p>
 
 </main>
@@ -287,5 +292,14 @@
   <div>4405 Stage Rd, Memphis, TN 38128 &nbsp;|&nbsp; (901) 380-0400</div>
   <div><a href="https://www.facebook.com/livingwordfellowshipcogic" target="_blank" rel="noopener">facebook.com/livingwordfellowshipcogic</a></div>
 </footer>
+<script src="calendar.js"></script>
+<script>
+  fetch("/api/announce?api=getCalendar&_=" + Date.now()).then(function (r) { return r.json(); }).then(function (d) {
+    var cal = d && d.ok && d.result;
+    if (!cal) return;
+    document.getElementById("cal-root").innerHTML = LWFCal.render(cal);
+    if (cal.subtitle) document.getElementById("cal-sub").textContent = cal.subtitle;
+  }).catch(function () {});
+</script>
 </body>
 </html>

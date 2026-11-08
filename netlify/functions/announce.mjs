@@ -34,6 +34,20 @@ export default async (req) => {
         result = { weekly, digital };
         break;
       }
+      case "getCalendar":
+        result = await store.get("calendar", { type: "json" });
+        break;
+      case "saveCalendar": {
+        needCode(a.code);
+        const c = a.calendar;
+        if (!c || typeof c !== "object") throw new Error("Nothing to save.");
+        const json = JSON.stringify(c);
+        if (json.length > 200000) throw new Error("The calendar is too long to save.");
+        c.savedAt = new Date().toISOString();
+        await store.setJSON("calendar", c);
+        result = true;
+        break;
+      }
       case "checkCode":
         result = String(a.code || "") === EDIT_CODE;
         break;
